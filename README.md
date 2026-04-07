@@ -128,6 +128,5 @@ SELECT *
 FROM ecomwork.audit.pipeline_log
 ORDER BY start_ts DESC;
 Power BI (Offline export approach)
-If Databricks SQL Warehouse connectivity is not used, the Gold table is exported to CSV from Databricks and loaded into Power BI Desktop for reporting.
+<img width="1600" height="795" alt="image" src="https://github.com/user-attachments/assets/7e59b07b-b5f4-4923-a411-d8f1c41d2799" />
 
-(Attach Power BI dashboard screenshots later.)
