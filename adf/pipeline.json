@@ -1,0 +1,142 @@
+{
+    "name": "PL_Ecom_MultiSource",
+    "properties": {
+        "activities": [
+            {
+                "name": "NB_01_bronze_order_file",
+                "type": "DatabricksNotebook",
+                "dependsOn": [],
+                "policy": {
+                    "timeout": "0.12:00:00",
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "typeProperties": {
+                    "notebookPath": "/Users/sujit08092003@gmail.com/01_bronze_order_file",
+                    "baseParameters": {
+                        "pipeline_name": "ecom_pipeline",
+                        "run_id": {
+                            "value": "@pipeline().RunId",
+                            "type": "Expression"
+                        }
+                    }
+                },
+                "linkedServiceName": {
+                    "referenceName": "AzureDatabricks1",
+                    "type": "LinkedServiceReference"
+                }
+            },
+            {
+                "name": "NB_02_Bronze_Customers_SQL",
+                "type": "DatabricksNotebook",
+                "dependsOn": [
+                    {
+                        "activity": "NB_01_bronze_order_file",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "policy": {
+                    "timeout": "0.12:00:00",
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "typeProperties": {
+                    "notebookPath": "/Users/sujit08092003@gmail.com/02_bronze_customers_sql_raw",
+                    "baseParameters": {
+                        "pipeline_name": "ecom_pipeline",
+                        "run_id": {
+                            "value": "@pipeline().RunId",
+                            "type": "Expression"
+                        }
+                    }
+                },
+                "linkedServiceName": {
+                    "referenceName": "AzureDatabricks1",
+                    "type": "LinkedServiceReference"
+                }
+            },
+            {
+                "name": "03_silver_clean_merge",
+                "type": "DatabricksNotebook",
+                "dependsOn": [
+                    {
+                        "activity": "NB_02_Bronze_Customers_SQL",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "policy": {
+                    "timeout": "0.12:00:00",
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "typeProperties": {
+                    "notebookPath": "/Users/sujit08092003@gmail.com/03_silver_clean_merge",
+                    "baseParameters": {
+                        "pipeline_name": "ecom_pipeline",
+                        "run_id": {
+                            "value": "@pipeline().RunId",
+                            "type": "Expression"
+                        }
+                    }
+                },
+                "linkedServiceName": {
+                    "referenceName": "AzureDatabricks1",
+                    "type": "LinkedServiceReference"
+                }
+            },
+            {
+                "name": "Gold_unified_table",
+                "type": "DatabricksNotebook",
+                "dependsOn": [
+                    {
+                        "activity": "03_silver_clean_merge",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "policy": {
+                    "timeout": "0.12:00:00",
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "typeProperties": {
+                    "notebookPath": "/Users/sujit08092003@gmail.com/04_Gold_Table",
+                    "baseParameters": {
+                        "pipeline_name": "ecom_pipeline",
+                        "run_id": "@pipeline().RunId"
+                    }
+                },
+                "linkedServiceName": {
+                    "referenceName": "AzureDatabricks1",
+                    "type": "LinkedServiceReference"
+                }
+            }
+        ],
+        "parameters": {
+            "pipeline_name": {
+                "type": "string",
+                "defaultValue": "ecom_pipeline"
+            }
+        },
+        "annotations": [],
+        "lastPublishTime": "2026-04-05T19:28:59Z"
+    },
+    "type": "Microsoft.DataFactory/factories/pipelines"
+}
